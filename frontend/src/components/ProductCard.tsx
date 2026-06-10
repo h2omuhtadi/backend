@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import type { ProductResponse } from '../types/api'
+import { formatCurrency } from '../utils/format'
 
 const ProductCard: React.FC<{ product: ProductResponse }> = ({ product }) => {
   return (
@@ -9,7 +10,7 @@ const ProductCard: React.FC<{ product: ProductResponse }> = ({ product }) => {
       <h3 className="mt-3 font-medium text-lg">{product.name}</h3>
       <p className="text-sm text-gray-600">{product.description}</p>
       <div className="mt-3 flex items-center justify-between">
-        <div className="text-lg font-semibold">${product.price}</div>
+        <div className="text-lg font-semibold">{formatCurrency(product.price)}</div>
         <Link to={`/product/${product.id}`} className="text-sm text-blue-600">View</Link>
       </div>
     </div>

@@ -1,23 +1,21 @@
 import React from 'react'
+import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
-import type { RegisterRequest } from '../types/api'
+
+type FormValues = {
+  name: string
+  email: string
+  password: string
+}
 
 const Register: React.FC = () => {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const form = new FormData(e.target as HTMLFormElement)
-    const payload: RegisterRequest = {
-      name: String(form.get('name') || ''),
-      email: String(form.get('email') || ''),
-      password: String(form.get('password') || ''),
-    }
-
+  const onSubmit = async (data: FormValues) => {
     try {
-      await api.post('/auth/register', payload)
-      // backend currently returns no token on register; redirect to login
+      await api.post('/auth/register', data)
       navigate('/login')
     } catch (err) {
       console.error(err)
@@ -28,20 +26,40 @@ const Register: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
       <h2 className="text-xl font-semibold mb-4">Register</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <label className="block mb-2">
           <span className="text-sm">Name</span>
-          <input name="name" className="mt-1 block w-full border rounded px-3 py-2" required />
+          <input
+            {...register('name', { required: 'Name is required' })}
+            name="name"
+            className="mt-1 block w-full border rounded px-3 py-2"
+          />
+          {errors.name && <div className="text-red-600 text-sm mt-1">{String(errors.name.message)}</div>}
         </label>
+
         <label className="block mb-2">
           <span className="text-sm">Email</span>
-          <input name="email" type="email" className="mt-1 block w-full border rounded px-3 py-2" required />
+          <input
+            {...register('email', { required: 'Email is required' })}
+            name="email"
+            type="email"
+            className="mt-1 block w-full border rounded px-3 py-2"
+          />
+          {errors.email && <div className="text-red-600 text-sm mt-1">{String(errors.email.message)}</div>}
         </label>
+
         <label className="block mb-4">
           <span className="text-sm">Password</span>
-          <input name="password" type="password" className="mt-1 block w-full border rounded px-3 py-2" required />
+          <input
+            {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min length is 6' } })}
+            name="password"
+            type="password"
+            className="mt-1 block w-full border rounded px-3 py-2"
+          />
+          {errors.password && <div className="text-red-600 text-sm mt-1">{String(errors.password.message)}</div>}
         </label>
-        <button type="submit" className="w-full py-2 bg-green-600 text-white rounded">Register</button>
+
+        <button type="submit" disabled={isSubmitting} className="w-full py-2 bg-green-600 text-white rounded">{isSubmitting ? 'Registering...' : 'Register'}</button>
       </form>
     </div>
   )

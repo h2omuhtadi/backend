@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getCart, removeCartItem, updateCartQuantity } from '../services/cart'
 import type { CartResponse } from '../types/cart'
+import { formatCurrency } from '../utils/format'
 
 const Cart: React.FC = () => {
   const [cart, setCart] = useState<CartResponse | null>(null)
@@ -21,7 +22,7 @@ const Cart: React.FC = () => {
           <div key={item.cartItemId} className="flex items-center justify-between border-b py-3">
             <div>
               <div className="font-medium">{item.productName}</div>
-              <div className="text-sm text-gray-500">Unit: ${item.unitPrice}</div>
+              <div className="text-sm text-gray-500">Unit: {formatCurrency(item.unitPrice)}</div>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -41,7 +42,7 @@ const Cart: React.FC = () => {
             </div>
           </div>
         ))}
-        <div className="mt-4 text-right font-bold">Total: ${cart.cartTotalAmount}</div>
+        <div className="mt-4 text-right font-bold">Total: {formatCurrency(cart.cartTotalAmount)}</div>
       </div>
     </div>
   )

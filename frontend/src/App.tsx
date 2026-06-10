@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import HeaderAuth from './components/HeaderAuth'
 
 const App: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
@@ -7,10 +8,7 @@ const App: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       <header className="bg-white shadow">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-xl font-semibold">My E-commerce</Link>
-          <nav className="space-x-4">
-            <Link to="/login" className="text-sm text-gray-700">Login</Link>
-            <Link to="/register" className="text-sm text-gray-700">Register</Link>
-          </nav>
+          <HeaderAuth />
         </div>
       </header>
 
