@@ -1,1 +1,1 @@
-Updated formatting and validation handling; added Playwright e2e skeleton and currency formatting util
+Updated OrderDetail to fetch order via /orders/{id}, added Playwright full E2E test and more unit tests for Orders

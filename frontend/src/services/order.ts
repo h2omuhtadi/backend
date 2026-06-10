@@ -17,6 +17,11 @@ export const getAllOrders = async (): Promise<OrderResponse[]> => {
   return res.data
 }
 
+export const getOrder = async (id: number): Promise<OrderResponse> => {
+  const res = await api.get(`/orders/${id}`)
+  return res.data
+}
+
 export const completeOrder = async (id: number) => {
   const res = await api.put(`/orders/${id}/complete`)
   return res.data

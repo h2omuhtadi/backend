@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getUserOrders } from '../services/order'
+import { getOrder } from '../services/order'
 import { makePayment } from '../services/payment'
 import type { OrderResponse } from '../types/order'
 import { useToast } from '../lib/toast'
+import { formatCurrency } from '../utils/format'
 
 const OrderDetail: React.FC = () => {
   const { id } = useParams()
@@ -15,8 +16,7 @@ const OrderDetail: React.FC = () => {
 
   useEffect(() => {
     if (!id) return
-    getUserOrders()
-      .then((list) => list.find((o) => String(o.id) === id) ?? null)
+    getOrder(Number(id))
       .then((found) => {
         if (found) {
           setOrder(found)
@@ -46,7 +46,23 @@ const OrderDetail: React.FC = () => {
       <h1 className="text-xl font-semibold mb-2">Order #{order.id}</h1>
       <div className="text-sm text-gray-500 mb-2">{new Date(order.createdAt).toLocaleString()}</div>
       <div className="mb-2">Status: {order.status}</div>
-      <div className="font-bold text-lg">Total: ${order.totalAmount}</div>
+      <div className="font-bold text-lg">Total: {formatCurrency(order.totalAmount)}</div>
+
+      {order.items && order.items.length > 0 ? (
+        <div className="mt-4">
+          <h2 className="font-semibold mb-2">Items</h2>
+          <div className="space-y-2">
+            {order.items.map((it: any) => (
+              <div key={it.id} className="flex justify-between">
+                <div>{it.productName} x{it.quantity}</div>
+                <div>{formatCurrency(it.unitPrice)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4 text-sm text-gray-500">Items are not available for this order.</div>
+      )}
 
       <div className="mt-4">
         <h2 className="font-semibold mb-2">Payment</h2>
