@@ -1,1 +1,1 @@
-Added Address management, Admin product UI, updated Checkout to use addresses and updated routes
+Updated: added toasts, admin orders, order detail page, and improved Orders page
