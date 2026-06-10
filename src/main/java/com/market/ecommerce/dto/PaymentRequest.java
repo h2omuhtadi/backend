@@ -1,3 +1,6 @@
 package com.market.ecommerce.dto;
 
-public record PaymentRequest(Long orderId, String amount, String method) { }
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record PaymentRequest(@NotNull Long orderId, @NotBlank String amount, @NotBlank String method) { }

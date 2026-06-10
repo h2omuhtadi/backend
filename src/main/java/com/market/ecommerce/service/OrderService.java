@@ -142,6 +142,12 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("الطلب غير موجود"));
     }
 
+    // New: return the Order entity with user fetched
+    public Order getOrderByIdWithUser(Long id) {
+        return orderRepository.findByIdWithUser(id)
+                .orElseThrow(() -> new ResourceNotFoundException("الطلب غير موجود"));
+    }
+
     // New: return safe DTO for order detail
     public OrderResponse getOrderByIdDto(Long id) {
         Order order = getOrderById(id);
