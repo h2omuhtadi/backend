@@ -10,6 +10,8 @@ import Register from './pages/Register'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Orders from './pages/Orders'
+import Addresses from './pages/Addresses'
+import AdminProducts from './pages/AdminProducts'
 import { AuthProvider } from './lib/auth'
 import { ProtectedRoute, AdminRoute } from './lib/protected'
 
@@ -27,7 +29,9 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+            <Route path="/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
             <Route path="/admin/orders" element={<AdminRoute><Orders /></AdminRoute>} />
+            <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
           </Routes>
         </App>
       </BrowserRouter>
