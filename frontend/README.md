@@ -1,1 +1,1 @@
-Updated routes with Cart and Checkout
+Updated routes: added AuthProvider and protected routes for Cart, Checkout, Orders
