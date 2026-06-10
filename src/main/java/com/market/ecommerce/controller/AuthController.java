@@ -7,6 +7,7 @@ import com.market.ecommerce.entity.User;
 import com.market.ecommerce.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
+    // read cookie secure flag from properties; default to false for tests/dev
+    @Value("${jwt.cookie.secure:false}")
+    private boolean jwtCookieSecure;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -41,14 +46,13 @@ public class AuthController {
         // نترك أيضاً الـ token في الـ body لسهولة التوافق مع الـ frontend الحالي
         ResponseCookie cookie = ResponseCookie.from("JWT", auth.token())
                 .httpOnly(true)
-                .secure(false) // تغيير إلى true عند التشغيل عبر HTTPS
+                .secure(jwtCookieSecure) // controlled by property
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-        servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
+        // add cookie via ResponseEntity header only (avoid duplicate headers)
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(auth);
     }
 }

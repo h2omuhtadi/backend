@@ -29,15 +29,28 @@ public class PaymentService {
     public Payment processPayment(PaymentRequest request, Order order) {
         if (order == null) throw new BadRequestException("Order not found");
 
-        BigDecimal amount = new BigDecimal(request.amount());
+        BigDecimal amount;
+        try {
+            amount = new BigDecimal(request.amount());
+        } catch (NumberFormatException ex) {
+            throw new BadRequestException("Invalid payment amount");
+        }
+
         if (order.getTotalAmount() == null || order.getTotalAmount().compareTo(amount) != 0) {
             throw new BadRequestException("Payment amount does not match order total");
+        }
+
+        PaymentMethod method;
+        try {
+            method = PaymentMethod.valueOf(request.method());
+        } catch (IllegalArgumentException ex) {
+            throw new BadRequestException("Invalid payment method");
         }
 
         Payment payment = Payment.builder()
                 .order(order)
                 .amount(amount)
-                .method(PaymentMethod.valueOf(request.method()))
+                .method(method)
                 .status(PaymentStatus.SUCCESS)
                 .transactionId("SIMULATED_" + Instant.now().toEpochMilli())
                 .build();
