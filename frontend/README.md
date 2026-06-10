@@ -1,1 +1,1 @@
-Updated: added toasts, admin orders, order detail page, and improved Orders page
+Added payment simulation, payment types, and payment service. OrderDetail now supports simulated payment.
