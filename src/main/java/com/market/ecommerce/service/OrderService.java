@@ -171,18 +171,46 @@ public class OrderService {
         );
     }
 
-    // إضافة دالة جلب طلبات المستخدم الحالي
-    public List<Order> getUserOrders() {
+    // Map single order to DTO
+    public OrderResponse toDto(Order order) {
+        var items = order.getItems().stream()
+                .map(it -> new OrderItemResponse(
+                        it.getId(),
+                        it.getProduct().getId(),
+                        it.getProduct().getName(),
+                        it.getQuantity(),
+                        it.getPrice().toString()
+                ))
+                .collect(Collectors.toList());
+
+        return new OrderResponse(
+                order.getId(),
+                order.getTotalAmount() != null ? order.getTotalAmount().toString() : "0.00",
+                order.getStatus() != null ? order.getStatus().name() : "",
+                order.getShippingAddress() != null ? order.getShippingAddress().getId() : null,
+                items
+        );
+    }
+
+    // New: return OrderResponse DTO after checkout
+    public OrderResponse checkoutDto(CheckoutRequest request) {
+        Order order = checkout(request);
+        return toDto(order);
+    }
+
+    // New: return list of DTOs for current user's orders
+    public List<OrderResponse> getUserOrdersDto() {
         String email = SecurityUtils.getCurrentUserEmail();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("المستخدم غير موجود"));
 
-        // تم التعديل هنا: جلب الطلبات مباشرة من قاعدة البيانات بدلاً من تصفيتها في الذاكرة
-        return orderRepository.findByUserId(user.getId());
+        List<Order> orders = orderRepository.findByUserId(user.getId());
+        return orders.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    // إضافة دالة جلب كافة الطلبات (للإدارة)
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    // New: return list of DTOs for all orders (admin)
+    public List<OrderResponse> getAllOrdersDto() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream().map(this::toDto).collect(Collectors.toList());
     }
 }
