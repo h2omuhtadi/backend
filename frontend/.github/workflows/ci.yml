@@ -18,7 +18,7 @@ jobs:
         run: |
           cd frontend
           npm ci
-      - name: Run tests
+      - name: Run unit tests
         run: |
           cd frontend
           npm run test -- --coverage
@@ -26,3 +26,30 @@ jobs:
         run: |
           cd frontend
           npm run build
+
+  # Optional E2E job - requires a running backend and frontend and appropriate secrets.
+  # Uncomment and configure if you want E2E in CI.
+  # e2e:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '18'
+  #     - name: Install frontend deps
+  #       run: |
+  #         cd frontend
+  #         npm ci
+  #         npx playwright install --with-deps
+  #     - name: Start backend (requires configuration)
+  #       run: echo "Start your backend here or use a service container"
+  #     - name: Start frontend
+  #       run: |
+  #         cd frontend
+  #         nohup npm run dev &
+  #     - name: Run Playwright tests
+  #       run: |
+  #         cd frontend
+  #         npx playwright test
