@@ -1,1 +1,1 @@
-Added payment simulation, payment types, and payment service. OrderDetail now supports simulated payment.
+Updated formatting and validation handling; added Playwright e2e skeleton and currency formatting util

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getProducts, createProduct, deleteProduct } from '../services/product'
 import type { ProductResponse, ProductRequest } from '../types/api'
+import { formatCurrency } from '../utils/format'
 
 const AdminProducts: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([])
@@ -21,9 +22,12 @@ const AdminProducts: React.FC = () => {
     try {
       const created = await createProduct(form)
       setProducts((p) => [created, ...p])
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      alert('Failed to create product')
+      const validation = err?.validation
+      if (validation) {
+        alert(Object.values(validation).join('\n'))
+      } else alert('Failed to create product')
     }
   }
 
@@ -49,7 +53,7 @@ const AdminProducts: React.FC = () => {
             <div key={prod.id} className="bg-white p-3 rounded shadow mb-2 flex justify-between items-center">
               <div>
                 <div className="font-medium">{prod.name}</div>
-                <div className="text-sm text-gray-500">${prod.price} • Stock: {prod.stock}</div>
+                <div className="text-sm text-gray-500">{formatCurrency(prod.price)} • Stock: {prod.stock}</div>
               </div>
               <div>
                 <button onClick={() => handleDelete(prod.id)} className="text-red-600">Delete</button>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getUserOrders } from '../services/order'
 import type { OrderResponse } from '../types/order'
 import { Link } from 'react-router-dom'
+import { formatCurrency } from '../utils/format'
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponse[]>([])
@@ -25,7 +26,7 @@ const Orders: React.FC = () => {
               <div className="text-sm text-gray-500">{new Date(o.createdAt).toLocaleString()}</div>
             </div>
             <div className="text-right">
-              <div className="font-semibold">${o.totalAmount}</div>
+              <div className="font-semibold">{formatCurrency(o.totalAmount)}</div>
               <div className="text-sm">Status: {o.status}</div>
               <Link to={`/orders/${o.id}`} className="text-blue-600 text-sm mt-1 inline-block">View</Link>
             </div>
