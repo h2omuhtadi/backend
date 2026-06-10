@@ -1,6 +1,8 @@
 package com.market.ecommerce.service;
 
 import com.market.ecommerce.dto.CheckoutRequest;
+import com.market.ecommerce.dto.OrderItemResponse;
+import com.market.ecommerce.dto.OrderResponse;
 import com.market.ecommerce.entity.*;
 import com.market.ecommerce.exception.BadRequestException;
 import com.market.ecommerce.exception.ResourceNotFoundException;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -131,6 +134,35 @@ public class OrderService {
 
         productRepository.saveAll(productsToUpdate); // تحديث المخزون دفعة واحدة
         orderRepository.save(order);
+    }
+
+    // New: return the Order entity by id
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("الطلب غير موجود"));
+    }
+
+    // New: return safe DTO for order detail
+    public OrderResponse getOrderByIdDto(Long id) {
+        Order order = getOrderById(id);
+
+        var items = order.getItems().stream()
+                .map(it -> new OrderItemResponse(
+                        it.getId(),
+                        it.getProduct().getId(),
+                        it.getProduct().getName(),
+                        it.getQuantity(),
+                        it.getPrice().toString()
+                ))
+                .collect(Collectors.toList());
+
+        return new OrderResponse(
+                order.getId(),
+                order.getTotalAmount() != null ? order.getTotalAmount().toString() : "0.00",
+                order.getStatus() != null ? order.getStatus().name() : "",
+                order.getShippingAddress() != null ? order.getShippingAddress().getId() : null,
+                items
+        );
     }
 
     // إضافة دالة جلب طلبات المستخدم الحالي

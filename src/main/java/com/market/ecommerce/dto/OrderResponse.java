@@ -1,12 +1,11 @@
 package com.market.ecommerce.dto;
 
-import com.market.ecommerce.entity.OrderStatus;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record OrderResponse(
-        Long id,
-        BigDecimal totalAmount,
-        OrderStatus status,
-        LocalDateTime createdAt
-) {}
+    Long id,
+    String totalAmount,
+    String status,
+    Long shippingAddressId,
+    List<OrderItemResponse> items
+) { }

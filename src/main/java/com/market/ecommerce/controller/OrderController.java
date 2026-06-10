@@ -1,5 +1,6 @@
 package com.market.ecommerce.controller;
 
+import com.market.ecommerce.dto.OrderResponse;
 import com.market.ecommerce.dto.CheckoutRequest;
 import com.market.ecommerce.entity.Order;
 import com.market.ecommerce.service.OrderService;
@@ -29,6 +30,11 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<Order>> getUserOrders() {
         return ResponseEntity.ok(orderService.getUserOrders());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderByIdDto(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
