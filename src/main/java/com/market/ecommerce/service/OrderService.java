@@ -64,34 +64,35 @@ public class OrderService {
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
-        List<Product> productsToUpdate = new ArrayList<>(); // لتحديث المخزون دفعة واحدة
 
         for (CartItem item : cartItems) {
-            Product product = item.getProduct();
+            Long productId = item.getProduct().getId();
+            int qty = item.getQuantity();
 
-            if (product.getStock() < item.getQuantity()) {
+            int updated = productRepository.decrementStockIfAvailable(productId, qty);
+            if (updated == 0) {
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ResourceNotFoundException("المنتج غير موجود"));
                 throw new BadRequestException("المخزون غير كافٍ للمنتج: " + product.getName());
             }
 
-            product.setStock(product.getStock() - item.getQuantity());
-            productsToUpdate.add(product);
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("المنتج غير موجود"));
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .product(product)
-                    .quantity(item.getQuantity())
+                    .quantity(qty)
                     .price(product.getPrice())
                     .build();
 
             orderItems.add(orderItem);
-            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(qty)));
         }
 
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
 
-        // حفظ التغييرات
-        productRepository.saveAll(productsToUpdate);
         Order savedOrder = orderRepository.save(order);
         cartRepository.deleteByUserId(user.getId());
 
