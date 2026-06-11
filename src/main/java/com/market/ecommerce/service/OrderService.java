@@ -125,15 +125,13 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELLED);
-        List<Product> productsToUpdate = new ArrayList<>();
 
         for (OrderItem item : order.getItems()) {
-            Product product = item.getProduct();
-            product.setStock(product.getStock() + item.getQuantity());
-            productsToUpdate.add(product);
+            Long productId = item.getProduct().getId();
+            int qty = item.getQuantity();
+            productRepository.incrementStock(productId, qty);
         }
 
-        productRepository.saveAll(productsToUpdate); // تحديث المخزون دفعة واحدة
         orderRepository.save(order);
     }
 
